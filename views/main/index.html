@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+    <link rel="stylesheet" type="text/css" href="/public/css/reset.css" />
+    <link rel="stylesheet" type="text/css" href="/public/css/index.css" />
+    <script type="text/javascript" src="/public/js/jquery.js"></script>
+    <script type="text/javascript" src="/public/js/index.js"></script>
+</head>
+<body>
+    <div id="register">
+        <p>注册</p>
+        <div>账号<input class="username" type="text" name="username"></div>
+        <div>密码<input class="password" type="text" name="password"></div>
+        <div>重复密码<input class="repassword" type="text" name="repassword"></div>
+        <button class="register_btn">注册</button>
+        <p class="tips"></p>
+    </div>
+    {% if userInfo._id %}
+    <div id="user_info">
+        <p>{{userInfo.username}}</p>
+        {% if userInfo.isAdmin %}
+        <p>你好，管理员</p>
+        <a href="/admin">进入管理界面</a>
+        {% else %}
+        <p>你好,欢迎光临我的博客</p>
+        {% endif %}
+        <a href="javascript:;" id="logout_btn">退出</a>
+    </div>
+    {% else %}
+    <div id="login">
+        <p>登陆</p>
+        <div>账号<input class="username" type="text" name="username"></div>
+        <div>密码<input class="password" type="text" name="password"></div>
+        <button class="login_btn">登陆</button>
+        <p class="tips"></p>
+    </div>
+    {% endif %}
+<!--     <section id="top">
+        <div class="msg">您好亲，欢迎光临浅秋技术博客</div>
+        <ul>
+            <li>友情链接置换</li>
+            <li>收藏本站</li>
+            <li>设为主页</li>
+        </ul>
+    </section>
+    <header id="header">
+        <div>
+            <h1>浅秋技术博客</h1>
+            <h2>人生总是走走停停</h2>
+        </div>
+        <div>
+            <input type="text" name="searchKey">
+            <div>搜索</div>
+        </div>
+    </header>
+    <nav id="nav">
+        <ul>
+            <li>网站首页</li>
+            <li>web前端</li>
+            <li>移动前端</li>
+            <li>学无止境</li>
+            <li>程序人生</li>
+        </ul>
+        <div></div>
+    </nav>
+    <body id="content"></body>
+    <footer id="footer"></footer> -->
+</body>
+</html>
