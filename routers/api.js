@@ -1,14 +1,16 @@
 var express = require( 'express' );
 var router = express.Router();
 var User = require( '../models/User' );
+var Content = require('../models/Contents');
 
 // 统一返回格式
 var responseData;
 
 router.use( function( req, res, next ) {
     responseData = {
-        code: 0,
-        message: ''
+        data: [],
+        error: 0,
+        message: 'success'
     };
     next();
 } );
@@ -128,5 +130,237 @@ router.get( '/', function( req, res, next ) {
 //     console.log(req.userInfo);
 //     res.json( { test: 111 } );
 // } )
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+/*
+* 用户管理
+* */
+router.get('/user', function(req, res) {
+    const { pageSize = 10, pageIndex = 1, username } = req.query;
+    const iPageSize = Number(pageSize);
+    const iPageIndex = Number(pageIndex);
+    const limit = iPageSize;
+    const skip = (iPageIndex - 1) * limit;
+    const reg = new RegExp(username, 'gi');
+
+    User.count({ username: { $regex: reg } }).then(function(count) {
+        User.find({ username: { $regex: reg } }).limit(limit).skip(skip).then(function(users) {
+            responseData.data = {
+                pageSize: iPageSize,
+                pageIndex: iPageIndex,
+                list: users,
+                total: count,
+            };
+            res.json(responseData);
+        });
+    });
+});
+
+/**
+ * 用户删除
+ * @type {[type]}
+ */
+router.post('/user/del', function(req, res) {
+    const { id } = req.body;
+
+    User.remove({
+        _id: id
+    }).then(function() {
+        res.json(responseData);
+    });
+})
+
+/**
+ * 用户添加
+ * @type {[type]}
+ */
+
+router.post('/user/add', function(req, res) {
+    const { username, password, isAdmin } = req.body;
+
+    User.findOne({
+        username: username
+    }).then(function(userInfo) {
+        if (userInfo) {
+            responseData.message="用户名存在";
+            responseData.error = 1;
+
+            res.json(responseData);
+            return;
+        }
+
+        var newUser = new User({
+            username,
+            password,
+            isAdmin,
+        });
+
+        return newUser.save();
+    }).then(function (newUserInfo){
+        if (newUserInfo) {
+            responseData.message="添加成功";
+
+            res.json(responseData);
+        }
+    })
+})
+
+/**
+ * 获取用户信息
+ * @type {[type]}
+ */
+router.get('/user/edit', function(req, res) {
+    const { id } = req.query;
+
+    User.findOne({
+        _id: id
+    }).then(function(userInfo) {
+        if (userInfo) {
+            responseData.data = {
+                info: userInfo,
+            };
+
+            res.json(responseData);
+        }
+    })
+});
+
+/**
+ * 更新用户信息
+ * @type {[type]}
+ */
+router.post('/user/update', function(res, req) {
+    const { id, username, password, isAdmin } = res.body;
+
+    User.update({
+            _id: id
+        }, { $set:{ username, password, isAdmin }
+    }).then(function(userInfo) {
+        if (userInfo) {
+            responseData.message = '保存成功';
+
+            req.json(responseData);
+        }
+    })
+});
+
+/**
+ * 文章部分
+ * @type {[type]}
+ */
+
+/**
+ * 文章管理
+ * @type {String}
+ */
+router.get('/content', function(req, res) {
+    const { pageSize = 10, pageIndex = 1, title } = req.query;
+    const iPageSize = Number(pageSize);
+    const iPageIndex = Number(pageIndex);
+    const limit = iPageSize;
+    const skip = (iPageIndex - 1) * limit;
+    const reg = new RegExp(title, 'gi');
+
+    Content.count({ title: { $regex: reg } }).then(function(count) {
+        Content.find({ title: { $regex: reg } }).limit(limit).skip(skip).then(function(contents) {
+            responseData.data = {
+                pageSize: iPageSize,
+                pageIndex: iPageIndex,
+                list: contents,
+                total: count,
+            };
+            res.json(responseData);
+        });
+    });
+});
+
+/**
+ * 文章删除
+ * @type {String}
+ */
+router.post('/content/del', function(res, req) {
+    const { id } = res.body;
+
+    Content.remove({
+        _id: id
+    }).then(function() {
+        req.json(responseData);
+    });
+});
+
+/**
+ * 添加文章
+ * @type {[type]}
+ */
+router.post('/content/add', function(res, req) {
+    const { title, content } = res.body;
+
+    Content.findOne({
+        title
+    }).then(function(contentInfo){
+        if (contentInfo) {
+            responseData.message = '文章存在';
+            responseData.error = 1;
+
+            req.json(responseData);
+        }
+
+        var newContent = new Content({
+            title,
+            content
+        });
+
+        return newContent.save();
+    }).then(function(newContentInfo) {
+        if (newContentInfo) {
+            responseData.message = '保存成功';
+
+            req.json(responseData);
+        }
+    })
+});
+
+/**
+ * 文章信息
+ * @type {[type]}
+ */
+router.get('/content/edit', function(req, res) {
+    const { id } = req.query;
+
+    Content.findOne({
+        _id: id
+    }).then(function(contentInfo) {
+        if (contentInfo) {
+            responseData.data = {
+                info: contentInfo
+            };
+
+            res.json(responseData);
+        }
+    })
+})
+
+/**
+ * 文章信息更新
+ * @type {[type]}
+ */
+router.post('/content/update', function(req, res) {
+    const { id, title, content } = req.body;
+
+
+    Content.update({
+        _id: id,
+    }, { title, content }).then(function(contentInfo) {
+        if (contentInfo) {
+            responseData.message = '更改成功';
+            responseData.data = {
+                info: contentInfo
+            };
+
+            res.json(responseData);
+        }
+    })
+})
 
 module.exports = router;
