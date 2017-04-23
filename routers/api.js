@@ -1,4 +1,6 @@
 var express = require( 'express' );
+// 加载图片上传模块
+var multiparty = require('multiparty');
 var router = express.Router();
 var User = require( '../models/User' );
 var Content = require('../models/Contents');
@@ -362,5 +364,75 @@ router.post('/content/update', function(req, res) {
         }
     })
 })
+
+/**
+ * 首页部分
+ * @type {[type]}
+ */
+
+/**
+ * 获取文章列表
+ * @type {[type]}
+ */
+ router.get('/home/newList', function(req, res) {
+     const { pageSize = 10, pageIndex = 1, title } = req.query;
+     const iPageSize = Number(pageSize);
+     const iPageIndex = Number(pageIndex);
+     const limit = iPageSize;
+     const skip = (iPageIndex - 1) * limit;
+     const reg = new RegExp(title, 'gi');
+
+     /*
+     * 1: 升序
+     * -1: 降序
+     * */
+     Content.count().then(function(count) {
+         Content.find().sort({_id: -1}).limit(limit).skip(skip).then(function(contents) {
+             responseData.data = {
+                 pageSize: iPageSize,
+                 pageIndex: iPageIndex,
+                 list: contents,
+                 total: count,
+             };
+             res.json(responseData);
+         });
+     });
+ });
+
+ /**
+  * 文章详情页
+  * @type {[type]}
+  */
+
+ /**
+  * 文章详情
+  * @return {[type]} [description]
+  */
+ router.get('/article/detail', function(req, res) {
+     const { id } = req.query;
+
+     Content.findOne({ _id: id }).then(function(contentInfo) {
+         responseData.data = {
+             info: contentInfo,
+         };
+         res.json(responseData);
+     });
+ })
+
+ router.post('/upload', function(req, res) {
+     var form = new multiparty.Form({uploadDir: './public/img'});
+    form.parse(req, function(err, fields, files) {
+        var filesTmp = JSON.stringify(files);
+
+        if(err){
+            console.log('parse error: ' + err);
+        } else {
+            testJson = eval("(" + filesTmp+ ")");
+            console.log(testJson.wangEditorH5File[0]);
+            res.json({imgSrc: "http://localhost:8888/public/img/MD3b2xqwmHvZwjp3BdF0pISR.png"})
+            console.log('rename ok');
+        }
+    });
+ })
 
 module.exports = router;
