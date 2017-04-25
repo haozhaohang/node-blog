@@ -419,6 +419,12 @@ router.post('/content/update', function(req, res) {
      });
  })
 
+/**
+ * 图片上传
+ * @param  {[type]} req [description]
+ * @param  {[type]} res [description]
+ * @return {[type]}     [description]
+ */
  router.post('/upload', function(req, res) {
      var form = new multiparty.Form({uploadDir: './public/img'});
     form.parse(req, function(err, fields, files) {
@@ -428,11 +434,12 @@ router.post('/content/update', function(req, res) {
             console.log('parse error: ' + err);
         } else {
             testJson = eval("(" + filesTmp+ ")");
-            console.log(testJson.wangEditorH5File[0]);
-            res.json({imgSrc: "http://localhost:8888/public/img/MD3b2xqwmHvZwjp3BdF0pISR.png"})
+            console.log(testJson.wangEditorH5File[0].path.split('\\')[2]);
+            res.json({imgSrc: `http://localhost:8888/public/img/${testJson.wangEditorH5File[0].path.split('\\')[2]}`});
             console.log('rename ok');
         }
     });
  })
+
 
 module.exports = router;

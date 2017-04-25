@@ -42,6 +42,7 @@ swig.setDefaults({
 */
 // app.get( '/', function( req, res, next ) {
 // 	res.send( '<h1>demo</h1>' );
+// });
 
 /**
  * 读取views目录下的指定文件，解析并返回客户端
@@ -78,7 +79,6 @@ app.use( function( req, res, next ) {
 /**
  * 根据不同的功能划分模块
 */
-app.use( '/admin', require( './routers/admin' ) );
 app.use( '/api', require( './routers/api' ) );
 app.use( '/', require( './routers/main' ) );
 
