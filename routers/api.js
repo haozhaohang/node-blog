@@ -296,7 +296,7 @@ router.post('/content/del', function(res, req) {
  * @type {[type]}
  */
 router.post('/content/add', function(res, req) {
-    const { title, content } = res.body;
+    const { title, content, classify } = res.body;
 
     Content.findOne({
         title
@@ -310,7 +310,8 @@ router.post('/content/add', function(res, req) {
 
         var newContent = new Content({
             title,
-            content
+            content,
+            classify
         });
 
         return newContent.save();

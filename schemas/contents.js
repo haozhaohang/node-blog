@@ -24,6 +24,9 @@ module.exports = new mongoose.Schema({
         default: 0
     },
 
+    // 文章类型
+    classify: String,
+
     //内容
     content: {
         type: String,
