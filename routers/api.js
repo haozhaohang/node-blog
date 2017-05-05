@@ -17,6 +17,7 @@ router.use( function( req, res, next ) {
     next();
 } );
 
+
 /*
     * 用户注册模块
 *   注册逻辑
@@ -355,28 +356,28 @@ router.post('/content/update', function(req, res) {
 })
 
 /**
- * 首页部分
- * @type {[type]}
- */
-
-/**
  * 获取文章列表
  * @type {[type]}
  */
- router.get('/home/newList', function(req, res) {
-     const { pageSize = 10, pageIndex = 1, title } = req.query;
+ router.get('/article/list', function(req, res) {
+     const { pageSize = 10, pageIndex = 1, title, classify } = req.query;
      const iPageSize = Number(pageSize);
      const iPageIndex = Number(pageIndex);
      const limit = iPageSize;
      const skip = (iPageIndex - 1) * limit;
-     const reg = new RegExp(title, 'gi');
+     const regTitle = new RegExp(title, 'gi');
+     const regClassify = new RegExp(classify, 'gi');
+     const reg = {
+        title: { $regex: regTitle },
+        classify: { $regex: regClassify },
+    };
 
      /*
      * 1: 升序
      * -1: 降序
      * */
-     Content.count().then(function(count) {
-         Content.find().sort({_id: -1}).limit(limit).skip(skip).then(function(contents) {
+     Content.count(reg).then(function(count) {
+         Content.find(reg).sort({_id: -1}).limit(limit).skip(skip).then(function(contents) {
              responseData.data = {
                  pageSize: iPageSize,
                  pageIndex: iPageIndex,
