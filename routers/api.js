@@ -80,8 +80,6 @@ router.post( '/user/register', function( req, res, next ) {
 } );
 
 router.post( '/user/login', function( req, res, next ) {
-    console.log('------------');
-    console.log(req.body);
     var username = req.body.username;
     var password = req.body.password;
     // 验证用户名或者密码不能为空
@@ -123,18 +121,7 @@ router.post( '/user/logout', function( req, res, next ) {
     res.json( responseData );
 } )
 
-router.get( '/', function( req, res, next ) {
-    console.log(req.userInfo);
-    res.json( { userInfo: req.userInfo } );
-} )
 
-// router.post( '/test', function( req, res, next ) {
-//     console.log(req.userInfo);
-//     res.json( { test: 111 } );
-// } )
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////
 /*
 * 用户管理
 * */
@@ -311,7 +298,8 @@ router.post('/content/add', function(res, req) {
         var newContent = new Content({
             title,
             content,
-            classify
+            classify,
+            createTime: new Date().getTime(),
         });
 
         return newContent.save();
@@ -349,12 +337,12 @@ router.get('/content/edit', function(req, res) {
  * @type {[type]}
  */
 router.post('/content/update', function(req, res) {
-    const { id, title, content } = req.body;
+    const { id, title, content, classify } = req.body;
 
 
     Content.update({
         _id: id,
-    }, { title, content }).then(function(contentInfo) {
+    }, { title, content, classify }).then(function(contentInfo) {
         if (contentInfo) {
             responseData.message = '更改成功';
             responseData.data = {
@@ -413,10 +401,17 @@ router.post('/content/update', function(req, res) {
      const { id } = req.query;
 
      Content.findOne({ _id: id }).then(function(contentInfo) {
+        const newViews = contentInfo.views + 1;
+
          responseData.data = {
              info: contentInfo,
          };
+
          res.json(responseData);
+
+         Content.update({
+            _id: id,
+        }, { views: newViews }).then();
      });
  })
 

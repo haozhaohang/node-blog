@@ -13,10 +13,7 @@ module.exports = new mongoose.Schema({
     },
 
     // 创建时间
-    createTime: {
-        type: Date,
-        default: new Date()
-    },
+    createTime: Number,
 
     // 阅读量
     views: {
