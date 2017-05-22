@@ -262,6 +262,21 @@ router.get('/label', function(req, res) {
 });
 
 /**
+ * 标签删除
+ * @type {[type]}
+ */
+router.post('/label/del', function(req, res) {
+    const { id } = req.body;
+
+    Label.remove({
+        _id: id
+    }).then(function() {
+        res.json(responseData);
+    });
+})
+
+
+/**
  * 标签添加
  * @type {[type]}
  */
@@ -293,6 +308,47 @@ router.post('/label/add', function(req, res) {
         }
     })
 })
+
+/**
+ * 获取标签信息
+ * @type {[type]}
+ */
+router.get('/label/edit', function(req, res) {
+    const { id } = req.query;
+
+    Label.findOne({
+        _id: id
+    }).then(function(labelInfo) {
+        if (labelInfo) {
+            responseData.data = {
+                info: labelInfo,
+            };
+
+            res.json(responseData);
+        }
+    })
+});
+
+/**
+ * 更新标签信息
+ * @type {[type]}
+ */
+router.post('/label/update', function(res, req) {
+    const { id, name } = res.body;
+
+    Label.update({
+        _id: id
+    }, {
+        $set: { name }
+    }).then(function(labelInfo) {
+        if (labelInfo) {
+            responseData.message = '保存成功';
+
+            req.json(responseData);
+        }
+    })
+});
+
 
 
 /**
