@@ -484,5 +484,32 @@ router.get('/achive/list', function(req, res) {
     });
 });
 
+/**
+ * aside中tag-cloud数据
+ */
+router.get('/aside/tag-cloud/list', function(req, res) {
+    var promises = [];
+    var skip;
+    var limit = 20;
+
+    Label.count().then(function(total) {
+
+        for (var i = 0; i < limit; i++) {
+            skip = Math.floor(Math.random() * total);
+            promises.push(Label.find({}, ['name']).skip(skip).limit(1).exec());
+        }
+
+        Promise.all(promises).then(function (results) {
+            const labels = results.splice(2).map(val => val[0]);
+
+            responseData.data = {
+                list: labels
+            };
+
+            res.json(responseData);
+        });
+    });
+});
+
 
 module.exports = router;
